@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="farmersmarket.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="7306"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="customer" custom_title="0" dock_id="1" table="4,8:maincustomer"/><dock_state state="000000ff00000000fd0000000100000002000003c8000002f5fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000003c80000010f00ffffff000002d90000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="booth" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="104"/><column index="2" value="125"/><column index="3" value="300"/><column index="4" value="83"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="89"/><column index="2" value="147"/><column index="3" value="145"/><column index="4" value="158"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">-- SELECT
+
+--selecting everything from customer
+SELECT*
+FROM customer;
+
+-- add a static value
+SELECT 2025 as this_year, 'April' as this_month,customer_id
+FROM customer;
+
+-- add an order by + limit
+SELECT *
+FROM customer
+ORDER BY customer_last_name
+LIMIT 10;
+
+
+-- WHERE
+
+SELECT * FROM customer
+WHERE customer_id = 1
+OR customer_id = 2;
+
+--in
+SELECT * FROM customer_purchases
+WHERE customer_id IN (3,4,5) --ONLY CUSTOMERS 3, 4, 5
+AND vendor_id IN (3,4,5);
+
+
+-- like
+
+SELECT * FROM product
+WHERE product_name LIKE '%pepper%';
+
+-- customers with a last name starting with a
+SELECT * FROM customer
+WHERE customer_last_name LIKE 'a%';
+
+SELECT * FROM product
+WHERE product_size IS NULL
+OR product_size = '' ;
+
+
+
+
+
+-- CASE
+SELECT *
+CASE WHEN vendor_type = 'Fresh Focused'
+       THEN 'Wednesday'
+WHEN vendor_type = 'Prepared Foods'
+        THEN 'Thursday'
+ELSE 'Saturday'
+END as day_of_speciality;
+
+--pie day, otherwise  nothing
+CASE WHEN vendor_name LIKE '%PIE%'
+       THEN 'Wednesday'
+END as only_pie_day	   
+
+
+FROM vendor
+
+</sql><sql name="SQL 2*">- CASE
+SELECT *
+CASE WHEN vendor_type = 'Fresh Focused'
+       THEN 'Wednesday'
+WHEN vendor_type = 'Prepared Foods'
+        THEN 'Thursday'
+ELSE 'Saturday'
+END as day_of_speciality;
+
+--pie day, otherwise  nothing
+CASE WHEN vendor_name LIKE '%PIE%'
+       THEN 'Wednesday'
+END as only_pie_day	   
+
+
+FROM vendor
+
+</sql><sql name="SQL 3*">--distint
+
+--without distinct, 4221 rows, of various customer_ids
+SELECT customer_id FROM customer_purchases;
+
+--with distinct, one row per customer, 26 rows total
+SELECT DISTINCT customer_id FROM customer_purchases;
+
+--WITHOUT DISTINCT, ONLY WED/SAT 150 TIMES OVER
+SELECT market_day
+FROM market_date_info;
+
+--MARKET IS OPEN WED/SAT
+SELECT DISTINCT  market_day
+FROM market_date_info</sql><sql name="SQL 4*">--inner JOIN
+-- no alias inner join</sql><sql name="SQL 5*">--count
+-- count the number of products
+
+
+SELECT count(product_id) as num_of_prod
+FROM product;
+
+--how many products per product_qty_type
+SELECT product_size, product_qty_type, count(product_id) as num_of_prod
+FROM product
+GROUP by product_size, product_qty_type;</sql><sql name="SQL 6*">-- SUM AND avg
+
+--HOW MUCH DID A CUSTOMER SPEND EACH DAY
+SELECT 
+market_date,
+customer_id,
+SUM(quantity*cost_to_customer_per_qty) as toatal_cost
+
+FROM customer_purchases
+GROUP by market_date, customer_id
+
+--how HOW MUCH DID A CUSTOMER SPEND on avg
+SELECT*
+
+FROM customer_purchases</sql><sql name="SQL 7*">--min &amp; max
+
+
+--what is the most exensive product
+
+SELECT
+product_name, max(original_price)
+
+FROM product p
+INNER JOIN vendor_inventory vi
+     on p.product_id=vi.product_id;
+	 
+	 
+	 --minimum price per each product_qty_type
+	 SELECT
+	 product_name, product_qty_type,
+	 original_price
+	 --min original_price
+	 
+	 
+	 FROM product p
+	 INNER JOIN vendor_inventory vi
+	      on p.product_id=vi</sql><sql name="SQL 8*">-- HAVING
+ 
+ 
+ --HOW MUCH DID A CUSTOMER SPEND EACH DAY
+SELECT 
+market_date,
+customer_id,
+SUM(quantity*cost_to_customer_per_qty) as total_cost
+
+FROM customer_purchases
+WHERE customer_id BETWEEN 1 AND 5
+GROUP by market_date, customer_id
+HAVING total_cost &gt; 50 ;--filtering the aggregated values</sql><current_tab id="7"/></tab_sql></sqlb_project>
